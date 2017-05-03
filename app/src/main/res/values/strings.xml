@@ -1,0 +1,13 @@
+<resources> <!--Naming = {Activity}_{Component}_{Identifier} --> <!-- -->
+    <string name="app_name">HeavensGPS</string>
+
+    <!-- MapActivity -->
+    <string name="title_activity_maps">Map</string>
+
+    <!-- MainMenuActivity -->
+    <string name="MainMenu_Btn_StartTracking">Begynd ny lokations track</string>
+
+
+
+
+</resources>
