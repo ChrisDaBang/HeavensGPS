@@ -1,7 +1,14 @@
 package gr16.android.heavensgps.activities;
 
+import android.Manifest;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,9 +50,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sduTek = new LatLng(55.367221, 10.431975);
-        mMap.addMarker(new MarkerOptions().position(sduTek).title("Marker for sduTek"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sduTek));
+
+        if (Build.VERSION.SDK_INT >= 23)
+        {
+            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        mMap.setMyLocationEnabled(true);
+        setCurrentPosition();
+    }
+
+    private void setCurrentPosition()
+    {
+        try {
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            Criteria c = new Criteria();
+            c.setAccuracy(Criteria.ACCURACY_FINE);
+
+            lm.requestSingleUpdate(c, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(currentPosition).title("Marker for sduTek"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            }, null);
+        }
+        catch (SecurityException e)
+        {
+            Toast.makeText(this, "GPS is not available", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
