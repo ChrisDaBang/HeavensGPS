@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import gr16.android.heavensgps.R;
 import gr16.android.heavensgps.application.HGPSApplication;
 
+// See this link for location tutorial. -> http://blog.teamtreehouse.com/beginners-guide-location-android
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
