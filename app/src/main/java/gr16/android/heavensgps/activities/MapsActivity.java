@@ -19,8 +19,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.function.Consumer;
-
 import gr16.android.heavensgps.R;
 import gr16.android.heavensgps.application.HGPSApplication;
 import gr16.android.heavensgps.application.LatLngCallback;
