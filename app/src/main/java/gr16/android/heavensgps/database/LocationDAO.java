@@ -22,28 +22,15 @@ public class LocationDAO
         dbHelper = new DBHelper(context);
     }
 
-    public void saveLocation(float latitude, float longitude)
+    public void saveLocation(double latitude, double longitude)
     {
-        int locationId = getLatestLocationId();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("locationid", locationId);
         contentValues.put("latitude", latitude);
-        contentValues.put("longitude", locationId);
+        contentValues.put("longitude", longitude);
         Date current = new Date();
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         contentValues.put("date", formatter.format(current));
         db.insert("TBLLOCATION", null, contentValues);
-    }
-
-    private int getLatestLocationId() {
-        int locationId = 0;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT MAX(locationid) FROM TBLLOCATION", null);
-        if(res.getCount() > 0) {
-            res.moveToFirst();
-            locationId = res.getInt(res.getColumnIndex("MAX(locationid)"));
-        }
-        return locationId;
     }
 }

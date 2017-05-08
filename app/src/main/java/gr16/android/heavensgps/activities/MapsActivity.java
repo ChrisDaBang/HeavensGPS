@@ -8,6 +8,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,8 +19,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.function.Consumer;
+
 import gr16.android.heavensgps.R;
 import gr16.android.heavensgps.application.HGPSApplication;
+import gr16.android.heavensgps.application.LatLngCallback;
+import gr16.android.heavensgps.database.LocationDAO;
 
 // See this link for location tutorial. -> http://blog.teamtreehouse.com/beginners-guide-location-android
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -55,11 +61,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+
+        Button btn = (Button) findViewById(R.id.btn_maps_saveLocation);
+        final FragmentActivity self = this;
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCurrentPosition(new LatLngCallback() {
+                    @Override
+                    public void call(LatLng latLng) {
+                        LocationDAO db = new LocationDAO(HGPSApplication.getContext());
+                        db.saveLocation(latLng.latitude, latLng.longitude);
+                        Toast.makeText(self, "Location saved", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
         mMap.setMyLocationEnabled(true);
-        setCurrentPosition();
+        setCurrentPosition(new LatLngCallback() {
+            @Override
+            public void call(LatLng location) {
+                mMap.addMarker(new MarkerOptions().position(location).title("You are here"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+            }
+        });
     }
 
-    private void setCurrentPosition()
+    private void setCurrentPosition(final LatLngCallback callback)
     {
         try {
             LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -70,8 +100,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onLocationChanged(Location location) {
                     LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(currentPosition).title("Marker for sduTek"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+
+                    if (callback != null)
+                    {
+                        callback.call(currentPosition);
+                    }
                 }
 
                 @Override

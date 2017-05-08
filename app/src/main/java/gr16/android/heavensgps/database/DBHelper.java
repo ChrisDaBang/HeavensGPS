@@ -10,15 +10,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper
 {
-    SQLiteDatabase currentDB = null;
-
-    private static String DB_NAME = "HEAVENSGPSDB";
-    private static int DB_VERSION = 1;
+    private static String DB_NAME = "HEAVENSGPS.db";
+    private static int DB_VERSION = 2;
     // Make a String per table, named TBL[NAME] as done under here.
     private static String DB_TABLELOCATION_CREATION = "CREATE TABLE IF NOT EXISTS `TBLLOCATION` (\n" +
             "  `locationid` INTEGER PRIMARY KEY,\n" +
-            "  `latitude` FLOAT\n" +
-            "  `longitude` FLOAT\n" +
+            "  `latitude` REAL,\n" +
+            "  `longitude` REAL,\n" +
             "  `date` TEXT\n" +
             ");";
 
@@ -29,30 +27,11 @@ public class DBHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        currentDB = db;
-        currentDB.execSQL(DB_TABLELOCATION_CREATION);
+        db.execSQL(DB_TABLELOCATION_CREATION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //todo
-    }
-
-    @Override
-    public SQLiteDatabase getWritableDatabase()
-    {
-        if(currentDB != null){
-            return currentDB;
-        }
-        return super.getWritableDatabase();
-    }
-
-    @Override
-    public SQLiteDatabase getReadableDatabase()
-    {
-        if(currentDB != null){
-            return currentDB;
-        }
-        return super.getReadableDatabase();
     }
 }
