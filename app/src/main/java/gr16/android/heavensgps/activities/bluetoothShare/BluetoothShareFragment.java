@@ -1,6 +1,5 @@
 package gr16.android.heavensgps.activities.bluetoothShare;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,7 +10,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +17,26 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import gr16.android.heavensgps.R;
 import gr16.android.heavensgps.activities.MainMenuActivity;
 import gr16.android.heavensgps.application.HGPSApplication;
+import gr16.android.heavensgps.application.PointInTime;
+import gr16.android.heavensgps.database.LocationDAO;
 
 public class BluetoothShareFragment extends Fragment {
 
-    private static final String TAG = "BluetoothShareFragment";
-
-    // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
 
-    // Layout Views
     private TextView labelSharedMsg;
     private TextView labelStatus;
     private Button btnShare;
@@ -50,17 +55,15 @@ public class BluetoothShareFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the chat session
         } else if (mShareService == null) {
             mShareService = new BluetoothShareService(getActivity(), mHandler);
         }
@@ -99,7 +102,7 @@ public class BluetoothShareFragment extends Fragment {
         btnShare = (Button) view.findViewById(R.id.btn_share);
         btnShare.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sendMessage("Hello " + "mConnectedDeviceName");
+                sendLocation();
             }
         });
         btnFindDevice = (Button) view.findViewById(R.id.btn_find_device);
@@ -124,15 +127,28 @@ public class BluetoothShareFragment extends Fragment {
         }
     }
 
-    private void sendMessage(String message) {
+    private void sendLocation() {
         if (mShareService.getState() != BluetoothShareService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), "Not connected", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (message.length() > 0) {
-            byte[] send = message.getBytes();
-            mShareService.write(send);
+        try {
+            LocationDAO db = new LocationDAO(HGPSApplication.getContext());
+            List<PointInTime> locations = db.getAllLocations();
+
+            if (!locations.isEmpty()) {
+                ByteArrayOutputStream b = new ByteArrayOutputStream();
+                ObjectOutputStream o = new ObjectOutputStream(b);
+                for (PointInTime l : locations) {
+                    o.writeObject(l);
+                }
+                mShareService.write(b.toByteArray());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 
@@ -155,19 +171,26 @@ public class BluetoothShareFragment extends Fragment {
                             break;
                     }
                     break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    String writeMessage = new String(writeBuf);
-                    //TODO receive data
-                    break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    labelSharedMsg.append(readMessage);
-                    //TODO send data
+                    ByteArrayInputStream b = new ByteArrayInputStream(readBuf);
+                    try {
+                        ObjectInputStream o = new ObjectInputStream(b);
+                        List<PointInTime> locations = new ArrayList<>();
+                        while (o.available() != 0) {
+                            Object obj = o.readObject();
+                            if (obj != null) {
+                                locations.add((PointInTime) obj);
+                            }
+                        }
+                        //TODO Do something with data
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
                     if (null != activity) {
                         Toast.makeText(activity, "Connected to "
@@ -187,17 +210,14 @@ public class BluetoothShareFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE:
-                // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data);
                 }
                 break;
             case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
                     mShareService = new BluetoothShareService(getActivity(), mHandler);
                 } else {
-                    Log.d(TAG, "BT not enabled");
                     Toast.makeText(getActivity(), "Bluetooth is off, going back",
                             Toast.LENGTH_SHORT).show();
                     HGPSApplication.activityIntentSwitch(new MainMenuActivity(), new BluetoothShareActivity());
@@ -206,12 +226,8 @@ public class BluetoothShareFragment extends Fragment {
     }
 
     private void connectDevice(Intent data) {
-        // Get the device MAC address
-        String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
+        String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
         mShareService.connect(device);
     }
 }

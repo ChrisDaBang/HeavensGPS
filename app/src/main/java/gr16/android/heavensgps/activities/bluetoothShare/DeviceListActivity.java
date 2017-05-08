@@ -21,7 +21,6 @@ import java.util.Set;
 import gr16.android.heavensgps.R;
 
 public class DeviceListActivity extends Activity {
-    private static final String TAG = "DeviceListActivity";
 
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
     private BluetoothAdapter mBtAdapter;
@@ -96,7 +95,6 @@ public class DeviceListActivity extends Activity {
     }
 
     private void doDiscovery() {
-        Log.d(TAG, "doDiscovery()");
 
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering()) {
@@ -112,20 +110,15 @@ public class DeviceListActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // Cancel discovery because it's costly and we're about to connect
-            Log.d(TAG, "0");
             mBtAdapter.cancelDiscovery();
-            Log.d(TAG, "1");
             bdDevice = detectedBluetoothDevices.get(position);
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, bdDevice.getAddress());
-            Log.d(TAG, "3");
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);
-            Log.d(TAG, "4");
             finish();
-            Log.d(TAG, "5");
         }
     }
 
@@ -159,7 +152,7 @@ public class DeviceListActivity extends Activity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED && device.getName() != null) {
-                    boolean flag = true;    // flag to indicate that particular device is already in the arlist or not
+                    boolean flag = true;
                     for(int i = 0; i<detectedBluetoothDevices.size();i++)
                     {
                         if(device.getAddress().equals(detectedBluetoothDevices.get(i).getAddress()))

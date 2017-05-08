@@ -1,12 +1,13 @@
 package gr16.android.heavensgps.application;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by lucas on 08-05-2017.
  */
 
-public class PointInTime {
+public class PointInTime implements Serializable {
     private double latitude, longitude;
     private Date date;
 
