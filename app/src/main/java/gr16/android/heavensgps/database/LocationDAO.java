@@ -6,8 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import gr16.android.heavensgps.application.PointInTime;
 
 /**
  * Created by ChrisPCBeast on 07-05-2017.
@@ -32,5 +37,21 @@ public class LocationDAO
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         contentValues.put("date", formatter.format(current));
         db.insert("TBLLOCATION", null, contentValues);
+    }
+
+    public List<PointInTime> getAllLocations() throws ParseException {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor result = db.query("TBLLOCATION", new String[]{"latitude", "longitude", "date"}, null, null, null, null, "locationid DESC");
+        List<PointInTime> locations = new ArrayList<>();
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        while(result.moveToNext())
+        {
+
+            Date date = formatter.parse(result.getString(2));
+            locations.add(new PointInTime(result.getDouble(0), result.getDouble(1), date));
+        }
+
+        return locations;
     }
 }
