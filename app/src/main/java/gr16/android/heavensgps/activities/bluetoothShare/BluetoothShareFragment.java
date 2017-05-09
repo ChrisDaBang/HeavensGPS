@@ -28,6 +28,7 @@ import java.util.List;
 
 import gr16.android.heavensgps.R;
 import gr16.android.heavensgps.activities.MainMenuActivity;
+import gr16.android.heavensgps.activities.ReceivedLocationsMapsActivity;
 import gr16.android.heavensgps.application.HGPSApplication;
 import gr16.android.heavensgps.application.PointInTime;
 import gr16.android.heavensgps.database.LocationDAO;
@@ -183,7 +184,10 @@ public class BluetoothShareFragment extends Fragment {
                                 locations.add((PointInTime) obj);
                             }
                         }
-                        //TODO Do something with data
+                        //We have recieved the data and will take you to a map showing it.
+                        HGPSApplication.setLocations(locations);
+                        HGPSApplication.activityIntentSwitch(new ReceivedLocationsMapsActivity(), new BluetoothShareActivity());
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {

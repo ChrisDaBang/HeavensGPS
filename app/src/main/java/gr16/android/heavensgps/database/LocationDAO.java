@@ -47,7 +47,6 @@ public class LocationDAO
 
         while(result.moveToNext())
         {
-
             Date date = formatter.parse(result.getString(2));
             locations.add(new PointInTime(result.getDouble(0), result.getDouble(1), date));
         }

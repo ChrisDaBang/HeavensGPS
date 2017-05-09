@@ -5,6 +5,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ChrisPCBeast on 03-05-2017.
  * Why create a sub-class of application? Because it can make developing the SQLlite database easier.
@@ -18,6 +21,8 @@ public final class HGPSApplication extends Application
     {
         instance = this;
     }
+
+    private static List<PointInTime> locationsReceived = new ArrayList<>(); //THIS IS NOT GOOD STUFF, but it is a quick way of implementing it.
     public static Context getContext()
     {
         return instance;
@@ -42,5 +47,13 @@ public final class HGPSApplication extends Application
         oldIntent.startActivity(mainIntent);
         oldIntent.overridePendingTransition(anim1, anim2);
         oldIntent.finish();
+    }
+
+    public static List<PointInTime> getLocations() {
+        return locationsReceived;
+    }
+
+    public static void setLocations(List<PointInTime> locations) {
+        locationsReceived = locations;
     }
 }
