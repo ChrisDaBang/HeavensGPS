@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import gr16.android.heavensgps.R;
+import gr16.android.heavensgps.activities.MainMenuActivity;
+import gr16.android.heavensgps.application.HGPSApplication;
 
 public class BluetoothShareActivity extends AppCompatActivity {
 
@@ -17,5 +19,11 @@ public class BluetoothShareActivity extends AppCompatActivity {
         BluetoothShareFragment fragment = new BluetoothShareFragment();
         transaction.replace(R.id.content_fragment, fragment);
         transaction.commit();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        HGPSApplication.activityIntentSwitch(new MainMenuActivity(), this);
     }
 }

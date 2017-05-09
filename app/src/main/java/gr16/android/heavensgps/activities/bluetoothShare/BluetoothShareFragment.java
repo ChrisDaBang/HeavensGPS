@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +39,7 @@ public class BluetoothShareFragment extends Fragment {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
 
-    private TextView labelSharedMsg;
-    private TextView labelStatus;
+    private EditText labelStatus;
     private Button btnShare;
     private Button btnFindDevice;
     private Button btnMakeDiscoverable;
@@ -97,8 +97,8 @@ public class BluetoothShareFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        labelSharedMsg = (TextView) view.findViewById(R.id.label_shared_text);
-        labelStatus = (TextView) view.findViewById(R.id.label_status);
+        labelStatus = (EditText) view.findViewById(R.id.label_status);
+        labelStatus.setText("Not Connected");
 
         btnShare = (Button) view.findViewById(R.id.btn_share);
         btnShare.setOnClickListener(new View.OnClickListener() {

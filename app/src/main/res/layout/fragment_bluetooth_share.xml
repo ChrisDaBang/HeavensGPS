@@ -11,12 +11,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <EditText
             android:id="@+id/label_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Not Connected"
-            tools:text="Not Connected" />
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="none" />
+
 
         <Button
             android:id="@+id/btn_share"
@@ -38,12 +40,6 @@
             android:layout_height="wrap_content"
             android:text="Make Discoverable"
             tools:text="Make Discoverable" />
-
-        <TextView
-            android:id="@+id/label_shared_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Shared with you:" />
 
     </LinearLayout>
 
