@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +52,7 @@ public class BluetoothShareFragment extends Fragment {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null) {
-            FragmentActivity activity = getActivity();
+            Activity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
@@ -156,7 +156,7 @@ public class BluetoothShareFragment extends Fragment {
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            FragmentActivity activity = getActivity();
+            Activity activity = getActivity();
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
@@ -186,7 +186,7 @@ public class BluetoothShareFragment extends Fragment {
                         }
                         //We have recieved the data and will take you to a map showing it.
                         HGPSApplication.setLocations(locations);
-                        HGPSApplication.activityIntentSwitch(new ReceivedLocationsMapsActivity(), getActivity().getParent());
+                        HGPSApplication.activityIntentSwitch(new ReceivedLocationsMapsActivity(), getActivity());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -224,7 +224,7 @@ public class BluetoothShareFragment extends Fragment {
                 } else {
                     Toast.makeText(getActivity(), "Bluetooth is off, going back",
                             Toast.LENGTH_SHORT).show();
-                    HGPSApplication.activityIntentSwitch(new MainMenuActivity(), getActivity().getParent());
+                    HGPSApplication.activityIntentSwitch(new MainMenuActivity(), getActivity());
                 }
         }
     }
