@@ -186,7 +186,7 @@ public class BluetoothShareFragment extends Fragment {
                         }
                         //We have recieved the data and will take you to a map showing it.
                         HGPSApplication.setLocations(locations);
-                        HGPSApplication.activityIntentSwitch(new ReceivedLocationsMapsActivity(), getActivity());
+                        HGPSApplication.activityIntentSwitch(new ReceivedLocationsMapsActivity(), getActivity().getParent());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -224,7 +224,7 @@ public class BluetoothShareFragment extends Fragment {
                 } else {
                     Toast.makeText(getActivity(), "Bluetooth is off, going back",
                             Toast.LENGTH_SHORT).show();
-                    HGPSApplication.activityIntentSwitch(new MainMenuActivity(), getActivity());
+                    HGPSApplication.activityIntentSwitch(new MainMenuActivity(), getActivity().getParent());
                 }
         }
     }
