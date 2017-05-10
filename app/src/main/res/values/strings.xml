@@ -3,16 +3,13 @@
 
     <!-- MapActivity -->
     <string name="title_activity_maps">Map</string>
-    <string name="Maps_Btn_SaveLocation">Gem denne lokation</string>
+    <string name="Maps_Btn_SaveLocation">Save This Location</string>
 
     <!-- MainMenuActivity -->
-    <string name="MainMenu_Btn_StartTracking">Begynd ny lokations track</string>
-    <string name="MainMenu_Btn_ShareTracking">Del din tracking historie</string>
+    <string name="MainMenu_Btn_StartTracking">Start Tracking</string>
+    <string name="MainMenu_Btn_ShareTracking">Share Tracking / Receive Tracking</string>
     <string name="title_activity_share">ShareActivity</string>
 
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_received_locations_maps">Track Map</string>
 
 
